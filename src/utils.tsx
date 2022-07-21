@@ -1,9 +1,9 @@
-import { IAppState, Record } from "./App";
+import { IData, IRecord } from "./App";
 
-export function prcocessDataFromJson({ records: rawRecords }: { records: Array<any> }): IAppState['data'] {
+export function prcocessDataFromJson({ records: rawRecords }: { records: Array<any> }): IData {
 
   // Format Array from JSON
-  let records = rawRecords.map((rawRecord: any): Record => {
+  let records = rawRecords.map((rawRecord: any): IRecord => {
     return {
       country: rawRecord.countriesAndTerritories,
       date: new Date(rawRecord.year, rawRecord.month - 1, rawRecord.day),
@@ -25,7 +25,7 @@ export function prcocessDataFromJson({ records: rawRecords }: { records: Array<a
   let countries = Object.keys(casesCounter) // Getting array of all countries for search aoutocomplete
 
   // sorting by date
-  records.sort((a: Record, b: Record) => {
+  records.sort((a: IRecord, b: IRecord) => {
     if (a.date < b.date) return -1
     if (a.date > b.date) return 1
     return 0
@@ -44,7 +44,7 @@ export function prcocessDataFromJson({ records: rawRecords }: { records: Array<a
   }
 
   // creating separate records table for worldwide statistics
-  let recordsWorldwide: Array<Record> = [];
+  let recordsWorldwide: Array<IRecord> = [];
 
   let currentDate = new Date(0); // records will be summed by dates, so I have to know currend date
 
