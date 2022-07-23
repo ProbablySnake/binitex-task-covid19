@@ -12,8 +12,11 @@
     "@types/react-dom": "^18.0.6",
     "bootstrap": "^5.2.0",
     "react": "^18.2.0",
+    "react-bootstrap": "^2.4.0",
+    "react-datepicker": "^4.8.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
+    "react-select-search": "^3.0.10",
     "typescript": "^4.7.4",
     "web-vitals": "^2.1.4"
   },
@@ -41,5 +44,8 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "https://opendata.ecdc.europa.eu"
+  "proxy": "https://opendata.ecdc.europa.eu",
+  "devDependencies": {
+    "@types/react-datepicker": "^4.4.2"
+  }
 }
