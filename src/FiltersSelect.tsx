@@ -11,8 +11,8 @@ interface IFiltersSelectProps {
   filterFields: SelectSearchOption[],
   filterSelected: string | undefined,
   setFilterSelected: React.Dispatch<React.SetStateAction<string | undefined>>,
-  filterRange: { min: number, max: number },
-  setFilterRange: React.Dispatch<React.SetStateAction<{ min: number, max: number }>>,
+  filterRange: { min: number | undefined, max: number | undefined },
+  setFilterRange: React.Dispatch<React.SetStateAction<{ min: number | undefined, max: number | undefined }>>,
 }
 
 export default function FiltersSelect({ isActive, countries, countrySelected, setCountrySelected, filterFields, filterSelected, setFilterSelected, filterRange, setFilterRange }: IFiltersSelectProps) {
@@ -20,12 +20,12 @@ export default function FiltersSelect({ isActive, countries, countrySelected, se
 
   function handleFilterMinChange(event: ChangeEvent<HTMLInputElement>) {
     if (event.target.value.match(/^[0-9]+$/))
-      setFilterRange((prev: { min: number, max: number }) => { return { ...prev, min: Number(event.target.value) } });
+      setFilterRange((prev: { min: number | undefined, max: number | undefined }) => { return { ...prev, min: Number(event.target.value) } });
   }
 
   function handleFilterMaxChange(event: ChangeEvent<HTMLInputElement>) {
     if (event.target.value.match(/^[0-9]+$/))
-      setFilterRange((prev: { min: number, max: number }) => { return { ...prev, max: Number(event.target.value) } });
+      setFilterRange((prev: { min: number | undefined, max: number | undefined }) => { return { ...prev, max: Number(event.target.value) } });
   }
 
   if (!isActive) return <></>
@@ -51,10 +51,10 @@ export default function FiltersSelect({ isActive, countries, countrySelected, se
         />
       </div>
       <div className='col-sm-2 my-1'>
-        <input className='form-control border-dark' placeholder='Min value' value={filterRange.min} onChange={handleFilterMinChange} />
+        <input className='form-control border-dark' placeholder='Min value' value={filterRange.min ?? ''} onChange={handleFilterMinChange} />
       </div >
       <div className='col-sm-2 my-1'>
-        <input className='form-control border-dark' placeholder='Max value' value={filterRange.max} onChange={handleFilterMaxChange} />
+        <input className='form-control border-dark' placeholder='Max value' value={filterRange.max ?? ''} onChange={handleFilterMaxChange} />
       </div>
       <div className='col-sm-auto my-1 ms-auto'>
         <Button
@@ -62,7 +62,7 @@ export default function FiltersSelect({ isActive, countries, countrySelected, se
           onClick={() => {
             setCountrySelected(undefined);
             setFilterSelected(undefined);
-            setFilterRange({ min: 0, max: 0 });
+            setFilterRange({ min: undefined, max: undefined });
           }}
         >
           Reset

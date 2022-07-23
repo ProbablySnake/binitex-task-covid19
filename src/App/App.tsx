@@ -44,7 +44,7 @@ export default function App({ }: IAppProps) {
   // Filters user selected for "Statistics per day" tab
   const [countrySelectedDay, setCountrySelectedDay] = useState<string | undefined>(undefined);
   const [filterSelectedDay, setFilterSelectedDay] = useState<string | undefined>(undefined);
-  const [filterRangeDay, setFilterRangeDay] = useState({ min: 0, max: 0 })
+  const [filterRangeDay, setFilterRangeDay] = useState<{ min: number | undefined, max: number | undefined }>({ min: undefined, max: undefined })
 
   // Filters user selected for "Chart" tab
   const [countrySelectedChart, setCountrySelectedChart] = useState<string | undefined>(undefined);
@@ -52,7 +52,7 @@ export default function App({ }: IAppProps) {
   // Filters user selected for "Statistics per period" tab
   const [countrySelectedRegion, setCountrySelectedRegion] = useState<string | undefined>(undefined);
   const [filterSelectedPeriod, setFilterSelectedPeriod] = useState<string | undefined>(undefined);
-  const [filterRangePeriod, setFilterRangePeriod] = useState({ min: 0, max: 0 });
+  const [filterRangePeriod, setFilterRangePeriod] = useState<{ min: number | undefined, max: number | undefined }>({ min: undefined, max: undefined });
 
 
   useEffect(() => {
