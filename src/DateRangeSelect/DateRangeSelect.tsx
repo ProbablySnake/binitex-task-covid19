@@ -13,11 +13,7 @@ interface Props {
 
 export default function DateRangeSelect({ minDate, maxDate, dateRange, setDateRange }: Props) {
   return (
-    <>
-      <div className='row mt-3 mt-md-5'>
-        <h5>Date range</h5>
-      </div>
-      <div className='row'>
+    <div className='row mt-3 mt-md-5'>
         <div className='col-sm-3 my-1'>
           <DatePicker
             dateFormat="yyyy/MM/dd"
@@ -50,7 +46,6 @@ export default function DateRangeSelect({ minDate, maxDate, dateRange, setDateRa
             Reset dates
           </Button>
         </div>
-      </div>
-    </>
+    </div>
   )
 }

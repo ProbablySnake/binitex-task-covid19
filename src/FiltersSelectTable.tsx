@@ -3,7 +3,7 @@ import { Button } from 'react-bootstrap'
 import SelectSearch, { fuzzySearch, SelectSearchOption } from 'react-select-search'
 import './SelectSearch.css'
 
-interface IFiltersSelectProps {
+interface IFiltersSelectTableProps {
   isActive: boolean,
   countries: SelectSearchOption[],
   countrySelected: string | undefined,
@@ -15,7 +15,7 @@ interface IFiltersSelectProps {
   setFilterRange: React.Dispatch<React.SetStateAction<{ min: number | undefined, max: number | undefined }>>,
 }
 
-export default function FiltersSelect({ isActive, countries, countrySelected, setCountrySelected, filterFields, filterSelected, setFilterSelected, filterRange, setFilterRange }: IFiltersSelectProps) {
+export default function FiltersSelectTable({ isActive, countries, countrySelected, setCountrySelected, filterFields, filterSelected, setFilterSelected, filterRange, setFilterRange }: IFiltersSelectTableProps) {
 
 
   function handleFilterMinChange(event: ChangeEvent<HTMLInputElement>) {
@@ -32,7 +32,7 @@ export default function FiltersSelect({ isActive, countries, countrySelected, se
 
   return (
     <div className='row my-2'>
-      <div className='col-md-3 my-1'>
+      <div className='col-xl-4 col-lg-5 col-md-6 my-1'>
         <SelectSearch
           options={countries}
           filterOptions={fuzzySearch}
@@ -42,7 +42,7 @@ export default function FiltersSelect({ isActive, countries, countrySelected, se
           onChange={(v: any) => { setCountrySelected(v) }}
         />
       </div>
-      <div className='col-md-3 my-1'>
+      <div className='col-xl-4 col-lg-5 col-md-6 my-1'>
         <SelectSearch
           options={filterFields}
           value={filterSelected}
@@ -50,14 +50,15 @@ export default function FiltersSelect({ isActive, countries, countrySelected, se
           onChange={(v: any) => { setFilterSelected(v) }}
         />
       </div>
-      <div className='col-sm-2 my-1'>
+      <div className='col-md-2 col-sm-3 col-4 my-1'>
         <input className='form-control border-dark' placeholder='Min value' value={filterRange.min ?? ''} onChange={handleFilterMinChange} />
       </div >
-      <div className='col-sm-2 my-1'>
+      <div className='col-md-2 col-sm-3 col-4 my-1'>
         <input className='form-control border-dark' placeholder='Max value' value={filterRange.max ?? ''} onChange={handleFilterMaxChange} />
       </div>
-      <div className='col-sm-auto my-1 ms-auto'>
+      <div className='col-sm-auto col-4 my-1 ms-auto d-flex justify-content-end'>
         <Button
+          className='d-flex'
           variant='outline-dark'
           onClick={() => {
             setCountrySelected(undefined);

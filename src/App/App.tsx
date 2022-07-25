@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { ButtonGroup, ToggleButton } from 'react-bootstrap';
-import SelectSearch, { fuzzySearch } from 'react-select-search';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { filterFieldsDay, filterFieldsPeriod, prcocessDataFromJson, tabs } from '../utils';
-import FiltersSelect from '../FiltersSelect';
 import DateRangeSelect from '../DateRangeSelect/DateRangeSelect';
 import TabSelect from '../TabSelect/TabSelect';
-import CountrySelect from '../CountrySelect';
+import FiltersSelectTable from '../FiltersSelectTable';
+import FilterSelectChart from '../FilterSelectChart';
+import Chart from '../Chart';
+import TableDay from '../TableDay';
 import './App.css'
 
 export interface IData {
@@ -14,7 +14,7 @@ export interface IData {
   maxDate: Date,
   countries: Array<{ name: string, value: string }>,
   records: IRecord[],
-  recordsWorldwide: IRecord[],
+  recordsWorld: IRecord[],
 }
 
 export interface IRecord {
@@ -47,12 +47,15 @@ export default function App({ }: IAppProps) {
   const [filterRangeDay, setFilterRangeDay] = useState<{ min: number | undefined, max: number | undefined }>({ min: undefined, max: undefined })
 
   // Filters user selected for "Chart" tab
-  const [countrySelectedChart, setCountrySelectedChart] = useState<string | undefined>(undefined);
+  const [countrySelectedChart, setCountrySelectedChart] = useState<string>('World');
+  const [infoSelectedChart, setInfoSelectedChart] = useState<'day' | 'total'>('day');
 
   // Filters user selected for "Statistics per period" tab
   const [countrySelectedRegion, setCountrySelectedRegion] = useState<string | undefined>(undefined);
   const [filterSelectedPeriod, setFilterSelectedPeriod] = useState<string | undefined>(undefined);
   const [filterRangePeriod, setFilterRangePeriod] = useState<{ min: number | undefined, max: number | undefined }>({ min: undefined, max: undefined });
+
+  const dsRef = useRef;
 
 
   useEffect(() => {
@@ -89,8 +92,8 @@ export default function App({ }: IAppProps) {
       />
 
       <div className='row'>
-        <div className='container bg-light rounded'>
-          <FiltersSelect
+        <div className='container bg-light text-black rounded d-flex flex-column data-screen'>
+          <FiltersSelectTable
             isActive={selectedTab === 'day'}
             countries={data.countries}
             countrySelected={countrySelectedDay}
@@ -102,14 +105,16 @@ export default function App({ }: IAppProps) {
             setFilterRange={setFilterRangeDay}
           />
 
-          <CountrySelect
+          <FilterSelectChart
             isActive={selectedTab === 'chart'}
             countries={data.countries}
             countrySelected={countrySelectedChart}
             setCountrySelected={setCountrySelectedChart}
+            infoSelected={infoSelectedChart}
+            setInfoSelected={setInfoSelectedChart}
           />
 
-          <FiltersSelect
+          <FiltersSelectTable
             isActive={selectedTab === 'period'}
             countries={data.countries}
             countrySelected={countrySelectedRegion}
@@ -120,6 +125,16 @@ export default function App({ }: IAppProps) {
             filterRange={filterRangePeriod}
             setFilterRange={setFilterRangePeriod}
           />
+          <div className='row flex-fill'>
+            <Chart
+              isActive={selectedTab === 'chart'}
+              records={data.records}
+              recordsWorld={data.recordsWorld}
+              dateRange={dateRange}
+              countrySelected={countrySelectedChart}
+              infoSelected={infoSelectedChart}
+            />
+          </div>
         </div>
       </div>
     </div>

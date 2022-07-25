@@ -26,7 +26,7 @@ export function prcocessDataFromJson({ records: rawRecords }: { records: Array<a
   records.forEach(element => {
     casesCounter[element.country] = 0
   });
-  let deathsCounter = casesCounter;
+  let deathsCounter = { ...casesCounter };
 
   // Getting array of all countries and regions for search aoutocomplete (foramt {name, value} is required for SelectSearch component)
   let countries = Object.keys(casesCounter).map((country: string) => { return { name: country.replaceAll('_', ' '), value: country } })
@@ -52,14 +52,14 @@ export function prcocessDataFromJson({ records: rawRecords }: { records: Array<a
   }
 
   // creating separate records table for worldwide statistics
-  let recordsWorldwide: Array<IRecordExt> = [];
+  let recordsWorld: Array<IRecordExt> = [];
 
   let currentDate = new Date(0); // records will be summed by dates, so I have to know currend date
 
   for (const record of records) {
     if (currentDate.getTime() !== record.date.getTime()) {  // if new day started pushing new record in array
       currentDate = record.date; // updating currentDate
-      recordsWorldwide.push({
+      recordsWorld.push({
         country: 'World',
         date: record.date,
         cases: record.cases,
@@ -72,14 +72,14 @@ export function prcocessDataFromJson({ records: rawRecords }: { records: Array<a
       });
       continue;
     }
-    let id = recordsWorldwide.length - 1;  // when it's the same day add numbers to existing record
-    recordsWorldwide[id] = {
-      ...recordsWorldwide[id],
-      cases: record.cases + recordsWorldwide[id].cases,
-      casesTotal: record.casesTotal + recordsWorldwide[id].casesTotal,
-      deaths: record.deaths + recordsWorldwide[id].deaths,
-      deathsTotal: record.deathsTotal + recordsWorldwide[id].deathsTotal,
-      popData2019: record.popData2019 + recordsWorldwide[id].popData2019,
+    let id = recordsWorld.length - 1;  // when it's the same day add numbers to existing record
+    recordsWorld[id] = {
+      ...recordsWorld[id],
+      cases: record.cases + recordsWorld[id].cases,
+      casesTotal: record.casesTotal + recordsWorld[id].casesTotal,
+      deaths: record.deaths + recordsWorld[id].deaths,
+      deathsTotal: record.deathsTotal + recordsWorld[id].deathsTotal,
+      popData2019: record.popData2019 + recordsWorld[id].popData2019,
     }
   }
 
@@ -100,7 +100,7 @@ export function prcocessDataFromJson({ records: rawRecords }: { records: Array<a
         deathsThousand: record.deathsThousand,
       }
     }),
-    recordsWorldwide: recordsWorldwide.map((record: IRecordExt) => {
+    recordsWorld: recordsWorld.map((record: IRecordExt) => {
       return {
         country: record.country,
         date: record.date,

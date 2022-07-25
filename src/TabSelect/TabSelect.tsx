@@ -2,13 +2,13 @@ import React from 'react'
 import { ButtonGroup, ToggleButton } from 'react-bootstrap'
 import './TabSelect.css'
 
-interface Props {
+interface ITabSelectProps {
   tabs: { name: string, value: string }[],
   selectedTab: string,
   setSelectedTab: React.Dispatch<React.SetStateAction<string>>,
 }
 
-export default function TabSelect({ tabs, selectedTab, setSelectedTab }: Props) {
+export default function TabSelect({ tabs, selectedTab, setSelectedTab }: ITabSelectProps) {
   return (
     <div className='row mt-4 btn-flat-bottom'>
       <div className='col-sm-auto'>
