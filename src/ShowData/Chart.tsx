@@ -1,9 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
-import { IChartProps, IRecord } from '../types';
+import { IRecord } from '../types';
 
-export default function Chart({ isActive, records, recordsWorld, dateRange, countrySelected, infoSelected }: IChartProps) {
+interface IChartProps {
+  isActive: boolean,
+  records: IRecord[],
+  recordsWorld: IRecord[],
+  dateRange: { start: Date | null, end: Date | null },
+  countrySelected: string,
+  infoSelected: 'day' | 'total'
+}
+
+function Chart({ isActive, records, recordsWorld, dateRange, countrySelected, infoSelected }: IChartProps) {
 
   const [recordsFiltered, setRecordsFiltered] = useState<IRecord[]>(recordsWorld);
 
@@ -15,8 +24,8 @@ export default function Chart({ isActive, records, recordsWorld, dateRange, coun
           .filter((record: IRecord) => {
             if (dateRange.start === null || dateRange.end === null) return true
             if (
-              dateRange.start.getTime() <= record.date.getTime() && dateRange.end.getTime() >= record.date.getTime() ||
-              dateRange.start.getTime() >= record.date.getTime() && dateRange.end.getTime() <= record.date.getTime()  // will work fine with min and max dates flipped
+              (dateRange.start.getTime() <= record.date.getTime() && dateRange.end.getTime() >= record.date.getTime()) ||
+              (dateRange.start.getTime() >= record.date.getTime() && dateRange.end.getTime() <= record.date.getTime())  // will work fine with min and max dates flipped
             ) return true
             return false
           })
@@ -34,15 +43,15 @@ export default function Chart({ isActive, records, recordsWorld, dateRange, coun
         .filter((record: IRecord) => {
           if (dateRange.start === null || dateRange.end === null) return true
           if (
-            dateRange.start.getTime() <= record.date.getTime() && dateRange.end.getTime() >= record.date.getTime() ||
-            dateRange.start.getTime() >= record.date.getTime() && dateRange.end.getTime() <= record.date.getTime()  // will work fine with min and max dates flipped
+            (dateRange.start.getTime() <= record.date.getTime() && dateRange.end.getTime() >= record.date.getTime()) ||
+            (dateRange.start.getTime() >= record.date.getTime() && dateRange.end.getTime() <= record.date.getTime())  // will work fine with min and max dates flipped
           ) return true
           return false
         })
         // making sure records are in hronological order
         .sort((a: IRecord, b: IRecord) => a.date.getTime() < b.date.getTime() ? -1 : a.date.getTime() > b.date.getTime() ? 1 : 0)
     })
-  }, [countrySelected, dateRange])
+  }, [countrySelected, dateRange, records, recordsWorld])
 
   if (!isActive) return <></>
 
@@ -80,3 +89,5 @@ export default function Chart({ isActive, records, recordsWorld, dateRange, coun
     </div>
   )
 }
+
+export default React.memo(Chart);

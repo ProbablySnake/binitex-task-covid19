@@ -1,11 +1,22 @@
 import React, { ChangeEvent } from 'react'
 import { Button } from 'react-bootstrap'
-import SelectSearch, { fuzzySearch } from 'react-select-search'
+import SelectSearch, { fuzzySearch, SelectSearchOption } from 'react-select-search'
 import './SelectSearch.css'
-import { IFiltersSelectPeriodProps } from '../types';
+import { IFilterSelectedPeriod } from '../types';
 import { filterFieldsPeriod } from '../utils';
 
-export default function FiltersSelectPeriod({ isActive, countries, countrySelected, setCountrySelected, filterSelected, setFilterSelected, filterRange, setFilterRange }: IFiltersSelectPeriodProps) {
+interface IFiltersSelectPeriodProps {
+  isActive: boolean,
+  countries: SelectSearchOption[],
+  countrySelected: string | undefined,
+  setCountrySelected: React.Dispatch<React.SetStateAction<string | undefined>>,
+  filterSelected: IFilterSelectedPeriod,
+  setFilterSelected: React.Dispatch<React.SetStateAction<IFilterSelectedPeriod>>,
+  filterRange: { min: string | undefined, max: string | undefined },
+  setFilterRange: React.Dispatch<React.SetStateAction<{ min: string | undefined, max: string | undefined }>>,
+}
+
+function FiltersSelectPeriod({ isActive, countries, countrySelected, setCountrySelected, filterSelected, setFilterSelected, filterRange, setFilterRange }: IFiltersSelectPeriodProps) {
 
 
   function handleFilterMinChange(event: ChangeEvent<HTMLInputElement>) {
@@ -70,3 +81,5 @@ export default function FiltersSelectPeriod({ isActive, countries, countrySelect
     </>
   )
 }
+
+export default React.memo(FiltersSelectPeriod);

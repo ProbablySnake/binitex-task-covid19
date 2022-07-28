@@ -1,9 +1,17 @@
 import React from 'react'
 import { Button } from 'react-bootstrap';
-import SelectSearch, { fuzzySearch } from 'react-select-search'
-import { IFilterSelectChartProps as IFiltersSelectChartProps } from '../types';
+import SelectSearch, { fuzzySearch, SelectSearchOption } from 'react-select-search'
 
-export default function FiltersSelectChart({ isActive, countries, countrySelected, setCountrySelected, infoSelected, setInfoSelected }: IFiltersSelectChartProps) {
+interface IFiltersSelectChartProps {
+  isActive: boolean,
+  countries: SelectSearchOption[],
+  countrySelected: string | undefined,
+  setCountrySelected: React.Dispatch<React.SetStateAction<string>>,
+  infoSelected: 'day' | 'total',
+  setInfoSelected: React.Dispatch<React.SetStateAction<'day' | 'total'>>,
+}
+
+function FiltersSelectChart({ isActive, countries, countrySelected, setCountrySelected, infoSelected, setInfoSelected }: IFiltersSelectChartProps) {
 
   if (!isActive) return <></>
 
@@ -38,3 +46,5 @@ export default function FiltersSelectChart({ isActive, countries, countrySelecte
     </div>
   )
 }
+
+export default React.memo(FiltersSelectChart);

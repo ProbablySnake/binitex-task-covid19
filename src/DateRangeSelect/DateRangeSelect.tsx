@@ -3,9 +3,15 @@ import { Button } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 
-import { IDateRangeSelectProps } from '../types';
 
 import './DateRangeSelect.css'
+
+interface IDateRangeSelectProps {
+  minDate: Date,
+  maxDate: Date,
+  dateRange: { start: Date | null, end: Date | null },
+  setDateRange: React.Dispatch<React.SetStateAction<{ start: Date | null, end: Date | null }>>,
+}
 
 export default function DateRangeSelect({ minDate, maxDate, dateRange, setDateRange }: IDateRangeSelectProps) {
   return (

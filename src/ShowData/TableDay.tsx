@@ -1,10 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import { ColumnDef, flexRender, getCoreRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table'
 
-import { IRecord, ITableDayProps } from '../types';
+import { IFilterSelectedDay, IRecord } from '../types';
 import { TablePagination } from '../TablePagination/TablePagination';
 
-export default function TableDay({ isActive, records, recordsWorld, dateRange, countrySelected, filterSelected, filterRange }: ITableDayProps) {
+interface ITableDayProps {
+  isActive: boolean,
+  records: IRecord[],
+  recordsWorld: IRecord[],
+  dateRange: { start: Date | null, end: Date | null },
+  countrySelected: string | undefined,
+  filterSelected: IFilterSelectedDay,
+  filterRange: { min: string | undefined, max: string | undefined },
+}
+
+function TableDay({ isActive, records, recordsWorld, dateRange, countrySelected, filterSelected, filterRange }: ITableDayProps) {
 
   const [recordsFiltered, setRecordsFiltered] = useState<IRecord[]>([]);
 
@@ -16,16 +26,16 @@ export default function TableDay({ isActive, records, recordsWorld, dateRange, c
           .filter((record: IRecord) => {
             if (dateRange.start === null || dateRange.end === null) return true
             if (
-              dateRange.start.getTime() <= record.date.getTime() && dateRange.end.getTime() >= record.date.getTime() ||
-              dateRange.start.getTime() >= record.date.getTime() && dateRange.end.getTime() <= record.date.getTime()  // will work fine with min and max dates flipped
+              (dateRange.start.getTime() <= record.date.getTime() && dateRange.end.getTime() >= record.date.getTime()) ||
+              (dateRange.start.getTime() >= record.date.getTime() && dateRange.end.getTime() <= record.date.getTime())  // will work fine with min and max dates flipped
             ) return true
             return false
           })
           .filter((record: IRecord) => {
             if (filterSelected === undefined || filterRange.min === undefined || filterRange.max === undefined) return true
             if (
-              filterRange.min <= record[filterSelected] && filterRange.max >= record[filterSelected] ||
-              filterRange.min >= record[filterSelected] && filterRange.max <= record[filterSelected]  // will work fine with min and max flipped
+              (filterRange.min <= record[filterSelected] && filterRange.max >= record[filterSelected]) ||
+              (filterRange.min >= record[filterSelected] && filterRange.max <= record[filterSelected])  // will work fine with min and max flipped
             ) return true
             return false
           })
@@ -43,23 +53,23 @@ export default function TableDay({ isActive, records, recordsWorld, dateRange, c
         .filter((record: IRecord) => {
           if (dateRange.start === null || dateRange.end === null) return true
           if (
-            dateRange.start.getTime() <= record.date.getTime() && dateRange.end.getTime() >= record.date.getTime() ||
-            dateRange.start.getTime() >= record.date.getTime() && dateRange.end.getTime() <= record.date.getTime()  // will work fine with min and max dates flipped
+            (dateRange.start.getTime() <= record.date.getTime() && dateRange.end.getTime() >= record.date.getTime()) ||
+            (dateRange.start.getTime() >= record.date.getTime() && dateRange.end.getTime() <= record.date.getTime())  // will work fine with min and max dates flipped
           ) return true
           return false
         })
         .filter((record: IRecord) => {
           if (filterSelected === undefined || filterRange.min === undefined || filterRange.max === undefined) return true
           if (
-            filterRange.min <= record[filterSelected] && filterRange.max >= record[filterSelected] ||
-            filterRange.min >= record[filterSelected] && filterRange.max <= record[filterSelected]  // will work fine with min and max flipped
+            (filterRange.min <= record[filterSelected] && filterRange.max >= record[filterSelected]) ||
+            (filterRange.min >= record[filterSelected] && filterRange.max <= record[filterSelected])  // will work fine with min and max flipped
           ) return true
           return false
         })
         // making sure records are in hronological order
         .sort((a: IRecord, b: IRecord) => a.date.getTime() < b.date.getTime() ? -1 : a.date.getTime() > b.date.getTime() ? 1 : 0)
     })
-  }, [countrySelected, dateRange, filterSelected, filterRange])
+  }, [countrySelected, dateRange, filterSelected, filterRange, records, recordsWorld])
 
 
 
@@ -94,7 +104,6 @@ export default function TableDay({ isActive, records, recordsWorld, dateRange, c
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    debugTable: true,
   })
 
   if (!isActive) return <></>
@@ -157,3 +166,5 @@ export default function TableDay({ isActive, records, recordsWorld, dateRange, c
     </div >
   )
 }
+
+export default React.memo(TableDay);

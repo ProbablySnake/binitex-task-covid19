@@ -1,25 +1,52 @@
-import React, { ChangeEvent } from 'react'
+import React, { ChangeEvent, useRef, useState } from 'react'
 import { Button } from 'react-bootstrap'
 import SelectSearch, { fuzzySearch, SelectSearchOption } from 'react-select-search'
 import './SelectSearch.css'
-import { IFiltersSelectDayProps } from '../types';
+import { IFilterSelectedDay } from '../types';
 import { filterFieldsDay } from '../utils';
 
-export default function FiltersSelectDay({ isActive, countries, countrySelected, setCountrySelected, filterSelected, setFilterSelected, filterRange, setFilterRange }: IFiltersSelectDayProps) {
+interface IFiltersSelectDayProps {
+  isActive: boolean,
+  countries: SelectSearchOption[],
+  countrySelected: string | undefined,
+  setCountrySelected: React.Dispatch<React.SetStateAction<string | undefined>>,
+  filterSelected: IFilterSelectedDay,
+  setFilterSelected: React.Dispatch<React.SetStateAction<IFilterSelectedDay>>,
+  filterRange: { min: string | undefined, max: string | undefined },
+  setFilterRange: React.Dispatch<React.SetStateAction<{ min: string | undefined, max: string | undefined }>>,
+}
 
+function FiltersSelectDay({ isActive, countries, countrySelected, setCountrySelected, filterSelected, setFilterSelected, filterRange, setFilterRange }: IFiltersSelectDayProps) {
 
+  const [valueMin, setValueMin] = useState<string | undefined>('');
+  const [valueMax, setValueMax] = useState<string | undefined>('');
+
+  const timerMin = useRef<NodeJS.Timeout | undefined>(undefined);
   function handleFilterMinChange(event: ChangeEvent<HTMLInputElement>) {
     if (event.target.value.match(/^(\d+((\.\d+)|\.)?)$/)) //   /^(\d+((\.\d+)|\.)?)$/  =>  number || number with dot || number dot number
-      setFilterRange((prev: { min: string | undefined, max: string | undefined }) => { return { ...prev, min: event.target.value } });
+      setValueMin(event.target.value);
     if (event.target.value === '')
-      setFilterRange((prev: { min: string | undefined, max: string | undefined }) => { return { ...prev, min: undefined } });
+      setValueMin(undefined);
+
+    clearTimeout(timerMin.current)
+    if (event.target.value.match(/^(\d+((\.\d+)|\.)?)$/))
+      timerMin.current = setTimeout(() => (setFilterRange((prev: { min: string | undefined, max: string | undefined }) => { return { ...prev, min: event.target.value } })), 500)
+    if (event.target.value === '')
+      timerMin.current = setTimeout(() => (setFilterRange((prev: { min: string | undefined, max: string | undefined }) => { return { ...prev, min: undefined } })), 500)
   }
 
+  const timerMax = useRef<NodeJS.Timeout | undefined>(undefined);
   function handleFilterMaxChange(event: ChangeEvent<HTMLInputElement>) {
-    if (event.target.value.match(/^(\d+((\.\d+)|\.)?)$/))
-      setFilterRange((prev: { min: string | undefined, max: string | undefined }) => { return { ...prev, max: event.target.value } });
+    if (event.target.value.match(/^(\d+((\.\d+)|\.)?)$/)) //   /^(\d+((\.\d+)|\.)?)$/  =>  number || number with dot || number dot number
+      setValueMax(event.target.value);
     if (event.target.value === '')
-      setFilterRange((prev: { min: string | undefined, max: string | undefined }) => { return { ...prev, max: undefined } });
+      setValueMax(undefined);
+
+    clearTimeout(timerMin.current)
+    if (event.target.value.match(/^(\d+((\.\d+)|\.)?)$/))
+      timerMax.current = setTimeout(() => (setFilterRange((prev: { min: string | undefined, max: string | undefined }) => { return { ...prev, max: event.target.value } })), 500)
+    if (event.target.value === '')
+      timerMax.current = setTimeout(() => (setFilterRange((prev: { min: string | undefined, max: string | undefined }) => { return { ...prev, max: undefined } })), 500)
   }
 
   if (!isActive) return <></>
@@ -48,19 +75,26 @@ export default function FiltersSelectDay({ isActive, countries, countrySelected,
       </div>
       <div className='row mb-2'>
         <div className='col-md-2 col-sm-3 col-4 my-1'>
-          <input className='form-control border-dark' placeholder='Min value' value={filterRange.min ?? ''} onChange={handleFilterMinChange} />
+          <input className='form-control border-dark' placeholder='Min value' value={valueMin ?? ''} onChange={handleFilterMinChange} />
         </div >
         <div className='col-md-2 col-sm-3 col-4 my-1'>
-          <input className='form-control border-dark' placeholder='Max value' value={filterRange.max ?? ''} onChange={handleFilterMaxChange} />
+          <input className='form-control border-dark' placeholder='Max value' value={valueMax ?? ''} onChange={handleFilterMaxChange} />
         </div>
         <div className='col-sm-auto col-4 my-1 d-flex'>
           <Button
             className='d-flex'
             variant='outline-secondary'
             onClick={() => {
-              setCountrySelected('World');
+              if (countrySelected !== 'World')
+                setCountrySelected('World');
+              if (filterSelected !== undefined)
               setFilterSelected(undefined);
+              if (filterRange.min !== undefined || filterRange.max !== undefined)
               setFilterRange({ min: undefined, max: undefined });
+              if (valueMin !== undefined)
+                setValueMin(undefined)
+              if (valueMax !== undefined)
+                setValueMax(undefined)
             }}
           >
             Reset
@@ -70,3 +104,5 @@ export default function FiltersSelectDay({ isActive, countries, countrySelected,
     </>
   )
 }
+
+export default React.memo(FiltersSelectDay);

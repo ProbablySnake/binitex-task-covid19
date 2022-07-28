@@ -9,54 +9,56 @@ export function TablePagination({ table }: { table: Table<any>; }) {
 
   return (
     <>
-      <nav className='my-2'>
-        <div className='btn-group user-select-none button-min-width'>
+      <div style={{ overflowY: 'auto' }}>
+        <nav className='my-2'>
+          <div className='btn-group user-select-none button-min-width'>
 
-          <button
-            className={`btn btn-outline-secondary ${table.getCanPreviousPage() ? '' : 'disabled '}`}
-            onClick={(e) => { e.currentTarget.blur(); table.setPageIndex(0) }}
-          >&laquo;</button>
-
-          <button
-            className={`btn btn-outline-secondary ${table.getCanPreviousPage() ? '' : 'disabled '}`}
-            onClick={(e) => { e.currentTarget.blur(); table.previousPage() }}
-          >&lsaquo;</button>
-
-
-          {table.getState().pagination.pageIndex <= 0 ? <button className='btn btn-outline-secondary disabled'></button> : <></>}
-
-
-          {table.getState().pagination.pageIndex > 0 ?
             <button
-              className='btn btn-outline-secondary'
-              onClick={(e) => { e.currentTarget.blur(); table.setPageIndex(table.getState().pagination.pageIndex - 1) }}
-            >{table.getState().pagination.pageIndex}</button>
-            : <></>
-          }
+              className={`btn btn-outline-secondary ${table.getCanPreviousPage() ? '' : 'disabled '}`}
+              onClick={(e) => { e.currentTarget.blur(); table.setPageIndex(0) }}
+            >&laquo;</button>
 
-          <button className='btn btn-outline-secondary active'>{table.getState().pagination.pageIndex + 1}</button>
-
-          {table.getState().pagination.pageIndex < table.getPageCount() - 1 ?
             <button
-              className='btn btn-outline-secondary'
-              onClick={(e) => { e.currentTarget.blur(); table.setPageIndex(table.getState().pagination.pageIndex + 1) }}
-            >{table.getState().pagination.pageIndex + 2}</button>
-            : <></>
-          }
+              className={`btn btn-outline-secondary ${table.getCanPreviousPage() ? '' : 'disabled '}`}
+              onClick={(e) => { e.currentTarget.blur(); table.previousPage() }}
+            >&lsaquo;</button>
 
-          {table.getState().pagination.pageIndex >= table.getPageCount() - 1 ? <button className='btn btn-outline-secondary disabled'></button> : <></>}
 
-          <button
-            className={`btn btn-outline-secondary ${table.getCanNextPage() ? '' : 'disabled '}`}
-            onClick={(e) => { e.currentTarget.blur(); table.nextPage() }}
-          >&rsaquo;</button>
+            {table.getState().pagination.pageIndex <= 0 ? <button className='btn btn-outline-secondary disabled'></button> : <></>}
 
-          <button
-            className={`btn btn-outline-secondary ${table.getCanNextPage() ? '' : 'disabled '}`}
-            onClick={(e) => { e.currentTarget.blur(); table.setPageIndex(table.getPageCount() - 1) }}
-          >&raquo;</button>
-        </div>
-      </nav>
+
+            {table.getState().pagination.pageIndex > 0 ?
+              <button
+                className='btn btn-outline-secondary'
+                onClick={(e) => { e.currentTarget.blur(); table.setPageIndex(table.getState().pagination.pageIndex - 1) }}
+              >{table.getState().pagination.pageIndex}</button>
+              : <></>
+            }
+
+            <button className='btn btn-outline-secondary active'>{table.getState().pagination.pageIndex + 1}</button>
+
+            {table.getState().pagination.pageIndex < table.getPageCount() - 1 ?
+              <button
+                className='btn btn-outline-secondary'
+                onClick={(e) => { e.currentTarget.blur(); table.setPageIndex(table.getState().pagination.pageIndex + 1) }}
+              >{table.getState().pagination.pageIndex + 2}</button>
+              : <></>
+            }
+
+            {table.getState().pagination.pageIndex >= table.getPageCount() - 1 ? <button className='btn btn-outline-secondary disabled'></button> : <></>}
+
+            <button
+              className={`btn btn-outline-secondary ${table.getCanNextPage() ? '' : 'disabled '}`}
+              onClick={(e) => { e.currentTarget.blur(); table.nextPage() }}
+            >&rsaquo;</button>
+
+            <button
+              className={`btn btn-outline-secondary ${table.getCanNextPage() ? '' : 'disabled '}`}
+              onClick={(e) => { e.currentTarget.blur(); table.setPageIndex(table.getPageCount() - 1) }}
+            >&raquo;</button>
+          </div>
+        </nav>
+      </div>
       <div className='row my-2'>
         <div className='text-nowrap align-self-center' style={{ width: 'auto' }}><b>Go to page:</b></div>
         <input

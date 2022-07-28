@@ -1,5 +1,8 @@
-import { IData, IRecord, IRecordExt } from "./types";
+import { IData, IRecord } from "./types";
 
+interface IRecordExt extends IRecord {
+  popData2019: number;
+}
 export function prcocessDataFromJson({ records: rawRecords }: { records: Array<any> }): IData {
 
   // Format Array from JSON

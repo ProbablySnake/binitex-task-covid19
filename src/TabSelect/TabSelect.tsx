@@ -1,8 +1,13 @@
 import React from 'react'
 import { ButtonGroup, ToggleButton } from 'react-bootstrap'
-import { ITabSelectProps } from '../types'
 
 import './TabSelect.css'
+
+interface ITabSelectProps {
+  tabs: { name: string, value: string }[],
+  selectedTab: string,
+  setSelectedTab: React.Dispatch<React.SetStateAction<string>>,
+}
 
 export default function TabSelect({ tabs, selectedTab, setSelectedTab }: ITabSelectProps) {
   return (

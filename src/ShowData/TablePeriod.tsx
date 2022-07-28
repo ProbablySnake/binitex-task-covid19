@@ -1,12 +1,36 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { ColumnDef, flexRender, getCoreRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table'
+import { SelectSearchOption } from 'react-select-search';
 
-import { IRecord, IRecordPeriod, ITablePeriodProps } from '../types';
+import { IFilterSelectedPeriod, IRecord } from '../types';
 import { TablePagination } from '../TablePagination/TablePagination';
 
-export default function TablePeriod({ isActive, records, recordsWorld, countries, dateRange, countrySelected, filterSelected, filterRange }: ITablePeriodProps) {
+interface IRecordPeriod {
+  country: string,
+  casesTotalPeriod: number,
+  deathsTotalPeriod: number,
+  casesAverage: number,
+  deathsAverage: number,
+  casesMax: number,
+  deathsMax: number,
+  casesThousandAverage: number | 'No pop. data',
+  deathsThousandAverage: number | 'No pop. data',
+  casesThousandMax: number | 'No pop. data',
+  deathsThousandMax: number | 'No pop. data',
+}
 
-  // const [recordsInPeriod, setRecordsInPeriod] = useState<{ worldR: IRecord[], countriesR: IRecord[] }>({ worldR: [], countriesR: [] })
+interface ITablePeriodProps {
+  isActive: boolean,
+  records: IRecord[],
+  recordsWorld: IRecord[],
+  countries: SelectSearchOption[],
+  dateRange: { start: Date | null, end: Date | null },
+  countrySelected: string | undefined,
+  filterSelected: IFilterSelectedPeriod,
+  filterRange: { min: string | undefined, max: string | undefined },
+}
+
+function TablePeriod({ isActive, records, recordsWorld, countries, dateRange, countrySelected, filterSelected, filterRange }: ITablePeriodProps) {
 
   const [recordsCalculated, setRecordsCalculated] = useState<IRecordPeriod[]>([])
   const [recordsFiltered, setRecordsFiltered] = useState<IRecordPeriod[]>([]);
@@ -17,23 +41,23 @@ export default function TablePeriod({ isActive, records, recordsWorld, countries
       counter[country.value] = 0
     });
     return counter;
-  }, [])
+  }, [countries])
 
   useEffect(() => {
     const recordsInPeriod: IRecord[] = [
       ...recordsWorld.filter((record: IRecord) => {
         if (dateRange.start === null || dateRange.end === null) return true
         if (
-          dateRange.start.getTime() <= record.date.getTime() && dateRange.end.getTime() >= record.date.getTime() ||
-          dateRange.start.getTime() >= record.date.getTime() && dateRange.end.getTime() <= record.date.getTime()
+          (dateRange.start.getTime() <= record.date.getTime() && dateRange.end.getTime() >= record.date.getTime()) ||
+          (dateRange.start.getTime() >= record.date.getTime() && dateRange.end.getTime() <= record.date.getTime())
         ) return true
         return false
       }),
       ...records.filter((record: IRecord) => {
         if (dateRange.start === null || dateRange.end === null) return true
         if (
-          dateRange.start.getTime() <= record.date.getTime() && dateRange.end.getTime() >= record.date.getTime() ||
-          dateRange.start.getTime() >= record.date.getTime() && dateRange.end.getTime() <= record.date.getTime()
+          (dateRange.start.getTime() <= record.date.getTime() && dateRange.end.getTime() >= record.date.getTime()) ||
+          (dateRange.start.getTime() >= record.date.getTime() && dateRange.end.getTime() <= record.date.getTime())
         ) return true
         return false
       }),
@@ -73,7 +97,7 @@ export default function TablePeriod({ isActive, records, recordsWorld, countries
       casesThousandMax: maxCasesThousandCounter[country],
       deathsThousandMax: maxDeathsThousandCounter[country],
     })))
-  }, [dateRange])
+  }, [dateRange, newCounter, records, recordsWorld])
 
   useEffect(() => {
     setRecordsFiltered(
@@ -81,8 +105,8 @@ export default function TablePeriod({ isActive, records, recordsWorld, countries
         .filter((record: IRecordPeriod) => {
           if (filterSelected === undefined || filterRange.min === undefined || filterRange.max === undefined) return true
           if (
-            filterRange.min <= record[filterSelected] && filterRange.max >= record[filterSelected] ||
-            filterRange.min >= record[filterSelected] && filterRange.max <= record[filterSelected]
+            (filterRange.min <= record[filterSelected] && filterRange.max >= record[filterSelected]) ||
+            (filterRange.min >= record[filterSelected] && filterRange.max <= record[filterSelected])
           ) return true
           return false
         })
@@ -90,8 +114,7 @@ export default function TablePeriod({ isActive, records, recordsWorld, countries
   }, [recordsCalculated, countrySelected, filterSelected, filterRange])
 
 
-
-  const shortWriting = (info: any) => info.getValue() >= 1000000 ? `${Math.round((info.getValue() / 1000000) * 100) / 100}M` : info.getValue() >= 1000 ? `${Math.round((info.getValue() / 1000) * 100) / 100}K` : info.getValue()
+  const shortWriting = (info: any) => info.getValue() >= 1000000 ? `${Math.round((info.getValue() / 1000000) * 100) / 100}M` : info.getValue() >= 1000 ? `${Math.round((info.getValue() / 1000) * 100) / 100}K` : (Math.round((info.getValue()) * 1000) / 1000)
 
   const columns: ColumnDef<IRecordPeriod>[] = [
     {
@@ -100,7 +123,11 @@ export default function TablePeriod({ isActive, records, recordsWorld, countries
     },
     { accessorKey: 'casesTotalPeriod', header: 'Cases total', cell: shortWriting, },
     { accessorKey: 'deathsTotalPeriod', header: 'Deaths total', cell: shortWriting, },
-    { accessorKey: 'casesAverage', header: 'Cases average', cell: shortWriting, },
+    {
+      accessorKey: 'casesAverage',
+      header: 'Cases average',
+      cell: shortWriting,
+    },
     { accessorKey: 'deathsAverage', header: 'Deaths average', cell: shortWriting, },
     { accessorKey: 'casesMax', header: 'Cases max', cell: shortWriting, },
     { accessorKey: 'deathsMax', header: 'Deaths max', cell: shortWriting, },
@@ -132,7 +159,6 @@ export default function TablePeriod({ isActive, records, recordsWorld, countries
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    debugTable: true,
   })
 
   if (!isActive) return <></>
@@ -195,3 +221,5 @@ export default function TablePeriod({ isActive, records, recordsWorld, countries
     </div >
   )
 }
+
+export default React.memo(TablePeriod);
