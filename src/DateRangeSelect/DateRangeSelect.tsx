@@ -2,16 +2,12 @@ import React from 'react'
 import { Button } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
+
+import { IDateRangeSelectProps } from '../types';
+
 import './DateRangeSelect.css'
 
-interface Props {
-  minDate: Date,
-  maxDate: Date,
-  dateRange: { start: Date | null, end: Date | null },
-  setDateRange: React.Dispatch<React.SetStateAction<{ start: Date | null, end: Date | null }>>,
-}
-
-export default function DateRangeSelect({ minDate, maxDate, dateRange, setDateRange }: Props) {
+export default function DateRangeSelect({ minDate, maxDate, dateRange, setDateRange }: IDateRangeSelectProps) {
   return (
     <div className='row mt-3 mt-md-5'>
         <div className='col-sm-3 my-1'>

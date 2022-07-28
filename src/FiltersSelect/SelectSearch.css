@@ -112,29 +112,3 @@
   overflow: auto;
   max-height: 360px;
 }
-
-
-/*
-*Scroll track cusomization
-*/
-/* width */
-.select-search ::-webkit-scrollbar {
-  width: 10px;
-}
-
-/* Track */
-.select-search ::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 3px;
-}
-
-/* Handle */
-.select-search ::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 3px;
-}
-
-/* Handle on hover */
-.select-search ::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}

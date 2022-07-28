@@ -4,19 +4,3 @@
   align-items: center;
   height: 100vh;
 }
-.data-screen {
-  min-height: 70vh;
-  padding-bottom: 0.75rem;
-}
-
-@media (min-width: 576px) {
-  .data-screen {
-    min-height: 80vh;
-  }
-}
-
-@media (min-width: 768px) {
-  .data-screen {
-    min-height: 75vh;
-  }
-}

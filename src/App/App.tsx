@@ -1,36 +1,19 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { filterFieldsDay, filterFieldsPeriod, prcocessDataFromJson, tabs } from '../utils';
+import { prcocessDataFromJson, tabs } from '../utils';
+import { IData, IFilterSelectedDay, IFilterSelectedPeriod } from '../types';
 import DateRangeSelect from '../DateRangeSelect/DateRangeSelect';
 import TabSelect from '../TabSelect/TabSelect';
-import FiltersSelectTable from '../FiltersSelectTable';
-import FilterSelectChart from '../FilterSelectChart';
-import Chart from '../Chart';
-import TableDay from '../TableDay';
+import FiltersSelectDay from '../FiltersSelect/FiltersSelectDay';
+import FiltersSelectChart from '../FiltersSelect/FiltersSelectChart';
+import TableDay from '../ShowData/TableDay';
+import Chart from '../ShowData/Chart';
+
 import './App.css'
+import FiltersSelectPeriod from '../FiltersSelect/FiltersSelectPeriod';
+import TablePeriod from '../ShowData/TablePeriod';
 
-export interface IData {
-  minDate: Date,
-  maxDate: Date,
-  countries: Array<{ name: string, value: string }>,
-  records: IRecord[],
-  recordsWorld: IRecord[],
-}
-
-export interface IRecord {
-  country: string,
-  date: Date,
-  cases: number,
-  deaths: number,
-  casesTotal: number,
-  deathsTotal: number,
-  casesThousand: number,
-  deathsThousand: number,
-}
-
-interface IAppProps { }
-
-export default function App({ }: IAppProps) {
+export default function App() {
 
   // Processed data from API
   const [data, setData] = useState<IData | undefined>(undefined)
@@ -42,20 +25,18 @@ export default function App({ }: IAppProps) {
   const [selectedTab, setSelectedTab] = useState('day');
 
   // Filters user selected for "Statistics per day" tab
-  const [countrySelectedDay, setCountrySelectedDay] = useState<string | undefined>(undefined);
-  const [filterSelectedDay, setFilterSelectedDay] = useState<string | undefined>(undefined);
-  const [filterRangeDay, setFilterRangeDay] = useState<{ min: number | undefined, max: number | undefined }>({ min: undefined, max: undefined })
+  const [countrySelectedDay, setCountrySelectedDay] = useState<string | undefined>('World');
+  const [filterSelectedDay, setFilterSelectedDay] = useState<IFilterSelectedDay>(undefined);
+  const [filterRangeDay, setFilterRangeDay] = useState<{ min: string | undefined, max: string | undefined }>({ min: undefined, max: undefined })
 
   // Filters user selected for "Chart" tab
   const [countrySelectedChart, setCountrySelectedChart] = useState<string>('World');
   const [infoSelectedChart, setInfoSelectedChart] = useState<'day' | 'total'>('day');
 
   // Filters user selected for "Statistics per period" tab
-  const [countrySelectedRegion, setCountrySelectedRegion] = useState<string | undefined>(undefined);
-  const [filterSelectedPeriod, setFilterSelectedPeriod] = useState<string | undefined>(undefined);
-  const [filterRangePeriod, setFilterRangePeriod] = useState<{ min: number | undefined, max: number | undefined }>({ min: undefined, max: undefined });
-
-  const dsRef = useRef;
+  const [countrySelectedPeriod, setCountrySelectedPeriod] = useState<string | undefined>('World');
+  const [filterSelectedPeriod, setFilterSelectedPeriod] = useState<IFilterSelectedPeriod>(undefined);
+  const [filterRangePeriod, setFilterRangePeriod] = useState<{ min: string | undefined, max: string | undefined }>({ min: undefined, max: undefined });
 
 
   useEffect(() => {
@@ -86,26 +67,34 @@ export default function App({ }: IAppProps) {
       />
 
       <TabSelect
-        tabs={tabs()}
+        tabs={tabs}
         selectedTab={selectedTab}
         setSelectedTab={setSelectedTab}
       />
 
       <div className='row'>
-        <div className='container bg-light text-black rounded d-flex flex-column data-screen'>
-          <FiltersSelectTable
+        <div className='container bg-light text-black rounded d-flex flex-column pb-2'>
+          <FiltersSelectDay
             isActive={selectedTab === 'day'}
             countries={data.countries}
             countrySelected={countrySelectedDay}
             setCountrySelected={setCountrySelectedDay}
-            filterFields={filterFieldsDay()}
             filterSelected={filterSelectedDay}
             setFilterSelected={setFilterSelectedDay}
             filterRange={filterRangeDay}
             setFilterRange={setFilterRangeDay}
           />
+          <TableDay
+            isActive={selectedTab === 'day'}
+            records={data.records}
+            recordsWorld={data.recordsWorld}
+            dateRange={dateRange}
+            countrySelected={countrySelectedDay}
+            filterSelected={filterSelectedDay}
+            filterRange={filterRangeDay}
+          />
 
-          <FilterSelectChart
+          <FiltersSelectChart
             isActive={selectedTab === 'chart'}
             countries={data.countries}
             countrySelected={countrySelectedChart}
@@ -113,28 +102,35 @@ export default function App({ }: IAppProps) {
             infoSelected={infoSelectedChart}
             setInfoSelected={setInfoSelectedChart}
           />
+          <Chart
+            isActive={selectedTab === 'chart'}
+            records={data.records}
+            recordsWorld={data.recordsWorld}
+            dateRange={dateRange}
+            countrySelected={countrySelectedChart}
+            infoSelected={infoSelectedChart}
+          />
 
-          <FiltersSelectTable
+          <FiltersSelectPeriod
             isActive={selectedTab === 'period'}
             countries={data.countries}
-            countrySelected={countrySelectedRegion}
-            setCountrySelected={setCountrySelectedRegion}
-            filterFields={filterFieldsPeriod()}
+            countrySelected={countrySelectedPeriod}
+            setCountrySelected={setCountrySelectedPeriod}
             filterSelected={filterSelectedPeriod}
             setFilterSelected={setFilterSelectedPeriod}
             filterRange={filterRangePeriod}
             setFilterRange={setFilterRangePeriod}
           />
-          <div className='row flex-fill'>
-            <Chart
-              isActive={selectedTab === 'chart'}
-              records={data.records}
-              recordsWorld={data.recordsWorld}
-              dateRange={dateRange}
-              countrySelected={countrySelectedChart}
-              infoSelected={infoSelectedChart}
-            />
-          </div>
+          <TablePeriod
+            isActive={selectedTab === 'period'}
+            records={data.records}
+            recordsWorld={data.recordsWorld}
+            countries={data.countries}
+            dateRange={dateRange}
+            countrySelected={countrySelectedPeriod}
+            filterSelected={filterSelectedPeriod}
+            filterRange={filterRangePeriod}
+          />
         </div>
       </div>
     </div>

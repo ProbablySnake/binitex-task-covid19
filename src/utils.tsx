@@ -1,22 +1,18 @@
-import { IData, IRecord } from "./App/App";
-
-interface IRecordExt extends IRecord {
-  popData2019: number;
-}
+import { IData, IRecord, IRecordExt } from "./types";
 
 export function prcocessDataFromJson({ records: rawRecords }: { records: Array<any> }): IData {
 
   // Format Array from JSON
   let records = rawRecords.map((rawRecord: any): IRecordExt => {
     return {
-      country: rawRecord.countriesAndTerritories,
       date: new Date(rawRecord.year, rawRecord.month - 1, rawRecord.day),
+      country: rawRecord.countriesAndTerritories,
       cases: rawRecord.cases,
       deaths: rawRecord.deaths,
       casesTotal: 0,
       deathsTotal: 0,
-      casesThousand: rawRecord.cases / rawRecord.popData2019 * 1000,
-      deathsThousand: rawRecord.deaths / rawRecord.popData2019 * 1000,
+      casesThousand: rawRecord.popData2019 > 0 ? rawRecord.cases / rawRecord.popData2019 * 1000 : 'No pop. data',
+      deathsThousand: rawRecord.popData2019 > 0 ? rawRecord.deaths / rawRecord.popData2019 * 1000 : 'No pop. data',
       popData2019: rawRecord.popData2019,
     }
   });
@@ -30,12 +26,12 @@ export function prcocessDataFromJson({ records: rawRecords }: { records: Array<a
 
   // Getting array of all countries and regions for search aoutocomplete (foramt {name, value} is required for SelectSearch component)
   let countries = Object.keys(casesCounter).map((country: string) => { return { name: country.replaceAll('_', ' '), value: country } })
-  countries.unshift({ name: 'World', value: 'World' })
+  countries.unshift({ name: 'World - combined info', value: 'World' })
 
   // sorting by date
   records.sort((a: IRecord, b: IRecord) => {
-    if (a.date < b.date) return -1
-    if (a.date > b.date) return 1
+    if (a.date.getTime() < b.date.getTime()) return -1
+    if (a.date.getTime() > b.date.getTime()) return 1
     return 0
   })
 
@@ -60,12 +56,12 @@ export function prcocessDataFromJson({ records: rawRecords }: { records: Array<a
     if (currentDate.getTime() !== record.date.getTime()) {  // if new day started pushing new record in array
       currentDate = record.date; // updating currentDate
       recordsWorld.push({
-        country: 'World',
         date: record.date,
+        country: 'World',
         cases: record.cases,
-        casesTotal: record.casesTotal,
+        casesTotal: 0,
         deaths: record.deaths,
-        deathsTotal: record.deathsTotal,
+        deathsTotal: 0,
         casesThousand: 0,
         deathsThousand: 0,
         popData2019: record.popData2019,
@@ -76,12 +72,20 @@ export function prcocessDataFromJson({ records: rawRecords }: { records: Array<a
     recordsWorld[id] = {
       ...recordsWorld[id],
       cases: record.cases + recordsWorld[id].cases,
-      casesTotal: record.casesTotal + recordsWorld[id].casesTotal,
       deaths: record.deaths + recordsWorld[id].deaths,
-      deathsTotal: record.deathsTotal + recordsWorld[id].deathsTotal,
       popData2019: record.popData2019 + recordsWorld[id].popData2019,
     }
   }
+
+  // some countries don't have records for every date, so you can't just sum totals
+  // counting totals for world
+  let casesCounterW = 0;
+  let deathsCounterW = 0;
+  recordsWorld = recordsWorld.map((record: IRecordExt) => {
+    casesCounterW += record.cases;
+    deathsCounterW += record.deaths;
+    return { ...record, casesTotal: casesCounterW, deathsTotal: deathsCounterW }
+  })
 
   //returning data
   return {
@@ -90,8 +94,8 @@ export function prcocessDataFromJson({ records: rawRecords }: { records: Array<a
     countries,
     records: records.map((record: IRecordExt) => {
       return {
-        country: record.country,
         date: record.date,
+        country: record.country,
         cases: record.cases,
         deaths: record.deaths,
         casesTotal: record.casesTotal,
@@ -102,8 +106,8 @@ export function prcocessDataFromJson({ records: rawRecords }: { records: Array<a
     }),
     recordsWorld: recordsWorld.map((record: IRecordExt) => {
       return {
-        country: record.country,
         date: record.date,
+        country: record.country,
         cases: record.cases,
         deaths: record.deaths,
         casesTotal: record.casesTotal,
@@ -115,36 +119,30 @@ export function prcocessDataFromJson({ records: rawRecords }: { records: Array<a
   }
 }
 
-export function tabs() {
-  return [
-    { name: 'Day statistics', value: 'day' },
-    { name: 'Chart', value: 'chart' },
-    { name: 'Period statistics', value: 'period' },
-  ];
-}
+export const tabs = [
+  { name: 'Day statistics', value: 'day' },
+  { name: 'Chart', value: 'chart' },
+  { name: 'Period statistics', value: 'period' },
+];
 
-export function filterFieldsDay() {
-  return [
-    { name: 'Cases', value: 'cases' },
-    { name: 'Deaths', value: 'deaths' },
-    { name: 'Cases total', value: 'casesTotal' },
-    { name: 'Deaths total', value: 'deathsTotal' },
-    { name: 'Cases per 1000 inhabitants', value: 'casesThousand' },
-    { name: 'Deaths per 1000 inhabitants', value: 'deathsThousand' },
-  ]
-}
+export const filterFieldsDay = [
+  { name: 'Cases', value: 'cases' },
+  { name: 'Deaths', value: 'deaths' },
+  { name: 'Cases total', value: 'casesTotal' },
+  { name: 'Deaths total', value: 'deathsTotal' },
+  { name: 'Cases per 1000 (‰) inhabitants', value: 'casesThousand' },
+  { name: 'Deaths per 1000 (‰) inhabitants', value: 'deathsThousand' },
+];
 
-export function filterFieldsPeriod() {
-  return [
-    { name: 'Cases total', value: 'casesTotalPeriod' },
-    { name: 'Deaths total', value: 'deathsTotalPeriod' },
-    { name: 'Cases average', value: 'casesAverage' },
-    { name: 'Deaths average', value: 'deathsAverage' },
-    { name: 'Cases maximal', value: 'casesMax' },
-    { name: 'Deaths maximal', value: 'deathsMax' },
-    { name: 'Average cases per 1000 inhabitants', value: 'casesThousandAverage' },
-    { name: 'Average deaths per 1000 inhabitants', value: 'deathsThousandAverage' },
-    { name: 'Maximal cases per 1000 inhabitants', value: 'casesThousandMax' },
-    { name: 'Maximal deaths per 1000 inhabitants', value: 'deathsThousandMax' },
-  ]
-}
+export const filterFieldsPeriod = [
+  { name: 'Cases total', value: 'casesTotalPeriod' },
+  { name: 'Deaths total', value: 'deathsTotalPeriod' },
+  { name: 'Cases average', value: 'casesAverage' },
+  { name: 'Deaths average', value: 'deathsAverage' },
+  { name: 'Cases maximal', value: 'casesMax' },
+  { name: 'Deaths maximal', value: 'deathsMax' },
+  { name: 'Average cases per 1000 inhabitants', value: 'casesThousandAverage' },
+  { name: 'Average deaths per 1000 inhabitants', value: 'deathsThousandAverage' },
+  { name: 'Maximal cases per 1000 inhabitants', value: 'casesThousandMax' },
+  { name: 'Maximal deaths per 1000 inhabitants', value: 'deathsThousandMax' },
+];
