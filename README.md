@@ -1,46 +1,56 @@
-# Getting Started with Create React App
+# This app is made as test task for Binitex
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Task requirments
 
-## Available Scripts
+- Приложение должно загружать статистические данные из открытого API по данному URL[ https://opendata.ecdc.europa.eu/covid19/casedistribution/json/ ](https://opendata.ecdc.europa.eu/covid19/casedistribution/json/)
+  - <span style="color:lime">Done:</span> src\App\App.tsx:42  
+  - To get around Cors policy I added API as proxy in package.json
 
-In the project directory, you can run:
+- Можно выбрать период отображения данных используя datepicker (всплывающее меню с календарем, где можно выбрать дату). По умолчанию выбран весь период (минимальная и максимальная дата из статистики). Данные в таблице и графике должны обновляться автоматически сразу после выбора иного периода.
+  - <span style="color:lime">Done:</span> src\DateRangeSelect\DateRangeSelect.tsx
 
-### `npm start`
+- Данные должны отображаться в одном из двух режимов, указанном пользователем, переключая с помощью вкладок (tabs) Таблица и График. По желанию переключение режима отображения можно и с помощью выпадающего списка (dropdown list).
+  - <span style="color:lime">Done:</span> src\TabSelect\TabSelect.tsx
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- В режиме таблицы должна отображаться таблица с 7 колонками данных как указано на схеме. Данные в таблице должны быть отсортированы (по умолчанию в алфавитном порядке по названиям стран). Можно добавить возможность сортировать данные по индивидуальным столбцам и разделение по страницам до 20 строк данных в таблице на каждой странице.
+  - <span style="color:lime">Done:</span> src\ShowData\TableDay.tsx
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- Над таблицей расположены 2 фильтра для - поиск по стране и по значению определенного поля. По умолчанию поля фильтров пустые. Фильтрация по значениям поля должна осуществляться выбором названия поля из выпадающего списка и указанием значений в полях ОТ и ДО. Данные в таблице должны обновляться сразу при смене значений фильтра. Можно сделать еще: если любое поле фильтра оставлять пустым или туда вводить не числа, то при фильтрации оно не берется во внимание.
+  - <span style="color:lime">Done:</span> src\FiltersSelect\FiltersSelectDay.tsx
 
-### `npm test`
+- Также над таблицей должна быть расположена кнопка для сброса фильтров таблицы, при нажатии которой оба фильтра сбрасываются на значения по умолчанию.
+  - <span style="color:lime">Done</span>
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Если при фильтрации не нашлось подходящих данных, то в таблице вместо строк отображать сообщение “Ничего не найдено”
+  - <span style="color:lime">Done</span>
 
-### `npm run build`
+- При переключении режима отображения на График вместо таблицы и ее фильтров отображается график с двумя кривыми (см. легенду графика). Ось X отображает выбранный период, ось Y отображает количество случаем.
+  - <span style="color:lime">Done:</span> src\ShowData\Chart.tsx
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Bonus requirments 
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- Оба поля datepicker должны быть ограничены минимальной и максимальной датой из полученных внешних данных статистики
+  - <span style="color:lime">Done</span>
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- Возможность указать иное количество отображаемых строк по страницам в таблице
+  - <span style="color:lime">Done</span>
 
-### `npm run eject`
+- У полей фильтра значений менять фон на красный, если туда введены не числа (присутствуют буквы или другие неподходящие символы)
+  - <span style="color:lime">Done Alternative:</span> input is restricted using regex  
+  you cant input wrong symbols
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+- Около полей выбора периода отображаемых данных добавить кнопку “Отобразить все данные”, которая появляется только при выборе иного периода и сбрасывает даты на значения по умолчанию.
+  - <span style="color:lime">Done</span>
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Добавить столбцы в таблицу, которые отображают среднее количество заболеваний и смертей в день за выбранный период.
+  - <span style="color:lime">Done:</span> src\ShowData\TablePeriod.tsx  
+  Moved all date period data into separate table
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+- Добавить столбцы в таблицу, которые отображают максимальное количество заболеваний и смертей в день за выбранный период.
+  - <span style="color:lime">Done</span>
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+- Над графиком расположен выпадающий список для выбора страны. По умолчанию, когда не выбрана ни одна страна, идет отображение суммированных данных по всем странам из статистики.
+  - <span style="color:lime">Done</span>
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+- Обеспечить масштабирование интерфейса на разных размерах экранов и мобильных устройствах.
+  - <span style="color:lime">Done</span>
